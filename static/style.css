@@ -1,0 +1,74 @@
+body {
+    margin: 0;
+    font-family: Arial;
+}
+
+#container {
+    display: flex;
+    height: 100vh;
+}
+
+/* 左侧 */
+#sidebar {
+    width: 200px;
+    background: #202123;
+    color: white;
+    padding: 10px;
+}
+
+.session {
+    padding: 8px;
+    cursor: pointer;
+    border-radius: 5px;
+}
+
+.session:hover {
+    background: #2a2b32;
+}
+
+.active {
+    background: #343541;
+}
+
+/* 右侧 */
+#main {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    background: #343541;
+    color: white;
+}
+
+#chat {
+    flex: 1;
+    padding: 20px;
+    overflow-y: auto;
+}
+
+.user {
+    text-align: right;
+    margin: 10px;
+}
+
+.ai {
+    text-align: left;
+    margin: 10px;
+}
+
+#input-area {
+    display: flex;
+    padding: 10px;
+    background: #40414f;
+}
+
+#input {
+    flex: 1;
+    padding: 10px;
+    background: #303139;
+    color: white;
+    border: none;
+}
+
+button {
+    margin-left: 10px;
+}
