@@ -1,6 +1,6 @@
 import OS
 
-API_KEY = os.getenv("API Key: OS-5zl5h46y45724dbt") #From AliCloud
+API_KEY = os.getenv("API_KEY")
 
 def call_qwen(user_input):
     url = "https://dashscope.aliyuncs.com/api/v1/services/aigc/text-generation/generation"
