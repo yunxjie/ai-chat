@@ -5,6 +5,7 @@ from flask import Flask, request, jsonify, render_template
 app = Flask(__name__)
 
 API_KEY = os.getenv("API_KEY")
+print("API_KEY =", API_KEY)
 
 def call_qwen(user_input):
     url = "https://dashscope.aliyuncs.com/api/v1/services/aigc/text-generation/generation"
