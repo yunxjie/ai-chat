@@ -1,98 +1,43 @@
 <!DOCTYPE html>
-<html>
+<html lang="zh">
 <head>
-<meta charset="UTF-8">
-<title>AI Chat</title>
-<link rel="stylesheet" href="/static/style.css">
+    <meta charset="UTF-8">
+    <title>AI聊天</title>
 </head>
-
 <body>
 
-<div id="container">
+<h2>AI聊天</h2>
 
-    <!-- 左侧会话栏 -->
-    <div id="sidebar">
-        <button onclick="newChat()">+ 新对话</button>
-        <div id="sessions"></div>
-    </div>
+<div id="chat"></div>
 
-    <!-- 右侧聊天 -->
-    <div id="main">
-        <div id="chat"></div>
-
-        <div id="input-area">
-            <input id="input" placeholder="输入内容...">
-            <button onclick="send()">发送</button>
-        </div>
-    </div>
-
-</div>
+<input id="input" placeholder="输入消息..." />
+<button onclick="sendMessage()">发送</button>
 
 <script>
-let currentSession = null
-let sessionCount = 0
+function sendMessage() {
+    const input = document.getElementById("input");
+    const message = input.value;
 
-function newChat() {
-    sessionCount++
-    currentSession = "session_" + sessionCount
-
-    let div = document.createElement("div")
-    div.innerText = "对话 " + sessionCount
-    div.className = "session"
-    div.onclick = () => switchSession(currentSession, div)
-
-    document.getElementById("sessions").appendChild(div)
-
-    document.getElementById("chat").innerHTML = ""
-    highlight(div)
-}
-
-function switchSession(id, element) {
-    currentSession = id
-    document.getElementById("chat").innerHTML = ""
-    highlight(element)
-}
-
-function highlight(el) {
-    document.querySelectorAll(".session").forEach(e => e.classList.remove("active"))
-    el.classList.add("active")
-}
-
-function addMessage(text, sender) {
-    let chat = document.getElementById("chat")
-    let div = document.createElement("div")
-    div.className = sender
-    div.innerText = text
-    chat.appendChild(div)
-    chat.scrollTop = chat.scrollHeight
-}
-
-function send() {
-    let input = document.getElementById("input")
-    let text = input.value
-
-    if (!text || !currentSession) return
-
-    addMessage(text, "user")
-    input.value = ""
+    if (!message) return;
 
     fetch("/chat", {
         method: "POST",
-        headers: {"Content-Type": "application/json"},
-        body: JSON.stringify({
-            message: text,
-            session_id: currentSession
-        })
+        headers: {
+            "Content-Type": "application/json"
+        },
+        body: JSON.stringify({ message: message })
     })
     .then(res => res.json())
     .then(data => {
-        addMessage(data.reply, "ai")
+        const chat = document.getElementById("chat");
+        chat.innerHTML += "<p>你：" + message + "</p>";
+        chat.innerHTML += "<p>AI：" + data.reply + "</p>";
+        input.value = "";
     })
+    .catch(err => {
+        console.error("错误：", err);
+    });
 }
-
-document.getElementById("input").addEventListener("keypress", function(e) {
-    if (e.key === "Enter") send()
-})
 </script>
 
 </body>
