@@ -18,21 +18,21 @@ def call_qwen(user_input):
     data = {
         "model": "qwen-turbo",
         "input": {
-            "prompt": user_input
+            "messages": [
+                {"role": "user", "content": user_input}
+            ]
         }
     }
 
     response = requests.post(url, headers=headers, json=data)
-
     result = response.json()
-    print(result)  # 👈 看真实返回
 
-    # ✅ 更安全写法（防止报错）
-    try:
+    print("返回数据：", result)
+
+    if "output" in result:
         return result["output"]["choices"][0]["message"]["content"]
-    except:
+    else:
         return str(result)
-
 
 @app.route("/")
 def home():
