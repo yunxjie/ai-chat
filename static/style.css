@@ -1,40 +1,200 @@
-<script>
-window.onload = function() {
+/* ===== 全局 ===== */
 
-    function sendMessage() {
-        console.log("按钮点击了");  // 👈 测试用
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  }
 
-        const input = document.getElementById("input");
-        const message = input.value.trim();
-
-        if (!message) {
-            alert("请输入内容");
-            return;
-        }
-
-        const chat = document.getElementById("chat");
-
-        chat.innerHTML += `<div class="user">我：${message}</div>`;
-
-        fetch("/chat", {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json"
-            },
-            body: JSON.stringify({ message: message })
-        })
-        .then(res => res.json())
-        .then(data => {
-            chat.innerHTML += `<div class="ai">AI：${data.reply}</div>`;
-        })
-        .catch(err => {
-            console.error("错误:", err);
-        });
-
-        input.value = "";
-    }
-
-    // 关键：绑定到 window（解决 onclick 找不到函数问题）
-    window.sendMessage = sendMessage;
+body {
+display: flex;
+height: 100vh;
+background: #1f1f1f;
+color: #e5e7eb;
 }
-</script>
+
+/* ===== 整体布局 ===== */
+.app {
+display: flex;
+width: 100%;
+}
+
+/* ===== 左侧栏 ===== */
+.sidebar {
+width: 240px;
+background: #171717;
+padding: 12px;
+display: flex;
+flex-direction: column;
+}
+
+.new-chat {
+background: #3b82f6;
+border: none;
+padding: 10px;
+border-radius: 8px;
+color: white;
+cursor: pointer;
+margin-bottom: 10px;
+font-weight: 500;
+}
+
+.new-chat:hover {
+background: #2563eb;
+}
+
+.chat-list {
+flex: 1;
+overflow-y: auto;
+}
+
+.chat-item {
+padding: 10px;
+border-radius: 8px;
+cursor: pointer;
+margin-bottom: 5px;
+transition: 0.2s;
+}
+
+.chat-item:hover {
+background: #2a2a2a;
+}
+
+.chat-item.active {
+background: #3a3f4b;
+}
+
+/* ===== 主区域 ===== */
+.main {
+flex: 1;
+display: flex;
+flex-direction: column;
+}
+
+/* 顶部 */
+.header {
+height: 50px;
+border-bottom: 1px solid #333;
+display: flex;
+align-items: center;
+padding: 0 16px;
+font-size: 14px;
+color: #ccc;
+}
+
+/* ===== 聊天区域 ===== */
+.chat-container {
+flex: 1;
+overflow-y: auto;
+padding: 20px;
+}
+
+.chat-inner {
+max-width: 800px;
+margin: 0 auto;
+}
+
+/* ===== 消息 ===== */
+.message {
+display: flex;
+margin-bottom: 12px;
+animation: fadeIn 0.2s ease;
+}
+
+/* 用户消息 */
+.message.user {
+justify-content: flex-end;
+}
+
+.message.user div {
+background: #3b82f6;
+color: white;
+padding: 10px 14px;
+border-radius: 12px;
+max-width: 70%;
+line-height: 1.5;
+}
+
+/* AI消息 */
+.message.ai {
+justify-content: flex-start;
+}
+
+.message.ai div {
+background: #2a2a2a;
+padding: 10px 14px;
+border-radius: 12px;
+max-width: 70%;
+line-height: 1.5;
+}
+
+/* ===== 输入区域 ===== */
+.input-area {
+border-top: 1px solid #333;
+padding: 12px;
+}
+
+.input-box {
+max-width: 800px;
+margin: 0 auto;
+display: flex;
+background: #2a2a2a;
+border-radius: 12px;
+padding: 10px;
+align-items: center;
+transition: 0.2s;
+}
+
+.input-box:focus-within {
+box-shadow: 0 0 0 2px #3b82f6;
+}
+
+input {
+flex: 1;
+background: transparent;
+border: none;
+color: white;
+outline: none;
+font-size: 14px;
+}
+
+input::placeholder {
+color: #888;
+}
+
+button {
+background: #3b82f6;
+border: none;
+color: white;
+padding: 6px 14px;
+border-radius: 8px;
+cursor: pointer;
+margin-left: 8px;
+}
+
+button:hover {
+background: #2563eb;
+}
+
+/* ===== 滚动条 ===== */
+::-webkit-scrollbar {
+width: 6px;
+}
+
+::-webkit-scrollbar-thumb {
+background: #555;
+border-radius: 3px;
+}
+
+/* ===== 动画 ===== */
+@keyframes fadeIn {
+from {
+opacity: 0;
+transform: translateY(5px);
+}
+to {
+opacity: 1;
+transform: translateY(0);
+}
+}
