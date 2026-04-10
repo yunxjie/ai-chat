@@ -1,83 +1,40 @@
-<!DOCTYPE html>
-<html lang="zh">
-<head>
-    <meta charset="UTF-8">
-    <title>AI聊天</title>
-
-    <!-- 正确引入CSS -->
-    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
-</head>
-
-<body>
-
-<div id="container">
-
-    <!-- 左侧会话栏 -->
-    <div id="sidebar">
-        <h3>会话</h3>
-        <div class="session active">默认会话</div>
-    </div>
-
-    <!-- 右侧聊天区域 -->
-    <div id="main">
-
-        <!-- 聊天内容 -->
-        <div id="chat"></div>
-
-        <!-- 输入区域 -->
-        <div id="input-area">
-            <input id="input" placeholder="输入消息..." />
-            <button onclick="sendMessage()">发送</button>
-        </div>
-
-    </div>
-
-</div>
-
 <script>
-function sendMessage() {
-    const input = document.getElementById("input");
-    const message = input.value.trim();
+window.onload = function() {
 
-    if (!message) {
-        alert("请输入内容");
-        return;
-    }
+    function sendMessage() {
+        console.log("按钮点击了");  // 👈 测试用
 
-    const chat = document.getElementById("chat");
+        const input = document.getElementById("input");
+        const message = input.value.trim();
 
-    // 显示用户消息
-    chat.innerHTML += `<div class="user">我：${message}</div>`;
+        if (!message) {
+            alert("请输入内容");
+            return;
+        }
 
-    // 自动滚动到底部
-    chat.scrollTop = chat.scrollHeight;
+        const chat = document.getElementById("chat");
 
-    // 发送请求
-    fetch("/chat", {
-        method: "POST",
-        headers: {
-            "Content-Type": "application/json"
-        },
-        body: JSON.stringify({ message: message })
-    })
-    .then(res => res.json())
-    .then(data => {
-        chat.innerHTML += `<div class="ai">AI：${data.reply}</div>`;
-        chat.scrollTop = chat.scrollHeight;
+        chat.innerHTML += `<div class="user">我：${message}</div>`;
+
+        fetch("/chat", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({ message: message })
+        })
+        .then(res => res.json())
+        .then(data => {
+            chat.innerHTML += `<div class="ai">AI：${data.reply}</div>`;
+        })
+        .catch(err => {
+            console.error("错误:", err);
+        });
+
         input.value = "";
-    })
-    .catch(err => {
-        console.error("错误:", err);
-    });
-}
-
-// 回车发送
-document.getElementById("input").addEventListener("keypress", function(e) {
-    if (e.key === "Enter") {
-        sendMessage();
     }
-});
-</script>
 
-</body>
-</html>
+    // 关键：绑定到 window（解决 onclick 找不到函数问题）
+    window.sendMessage = sendMessage;
+}
+</script>
