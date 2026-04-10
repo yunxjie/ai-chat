@@ -1,6 +1,45 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <meta charset="UTF-8">
+    <title>AI聊天</title>
+
+    <!-- 引入CSS -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+
+<body>
+
+<div id="container">
+
+    <!-- 左侧 -->
+    <div id="sidebar">
+        <h3>会话</h3>
+        <div class="session active">默认会话</div>
+    </div>
+
+    <!-- 右侧 -->
+    <div id="main">
+
+        <!-- 聊天区 -->
+        <div id="chat"></div>
+
+        <!-- 输入区 -->
+        <div id="input-area">
+            <input id="input" placeholder="输入消息..." />
+            <button id="sendBtn">发送</button>
+        </div>
+
+    </div>
+
+</div>
+
+<!-- ✅ JS必须放在body最后 -->
 <script>
+console.log("JS加载成功");  // 用于验证
+
 function sendMessage() {
-    console.log("按钮点击了");  // 👈 测试
+    console.log("按钮点击了");
 
     const input = document.getElementById("input");
     const message = input.value.trim();
@@ -12,8 +51,10 @@ function sendMessage() {
 
     const chat = document.getElementById("chat");
 
+    // 显示用户消息
     chat.innerHTML += `<div class="user">我：${message}</div>`;
 
+    // 发送请求
     fetch("/chat", {
         method: "POST",
         headers: {
@@ -33,6 +74,16 @@ function sendMessage() {
     input.value = "";
 }
 
-// 👇 关键：确保函数在全局
-window.sendMessage = sendMessage;
+// ✅ 正确绑定按钮（不用 onclick，最稳）
+document.getElementById("sendBtn").addEventListener("click", sendMessage);
+
+// ✅ 回车发送
+document.getElementById("input").addEventListener("keypress", function(e) {
+    if (e.key === "Enter") {
+        sendMessage();
+    }
+});
 </script>
+
+</body>
+</html>
