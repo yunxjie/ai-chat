@@ -1,74 +1,83 @@
-body {
-    margin: 0;
-    font-family: Arial;
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <meta charset="UTF-8">
+    <title>AI聊天</title>
+
+    <!-- 正确引入CSS -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+
+<body>
+
+<div id="container">
+
+    <!-- 左侧会话栏 -->
+    <div id="sidebar">
+        <h3>会话</h3>
+        <div class="session active">默认会话</div>
+    </div>
+
+    <!-- 右侧聊天区域 -->
+    <div id="main">
+
+        <!-- 聊天内容 -->
+        <div id="chat"></div>
+
+        <!-- 输入区域 -->
+        <div id="input-area">
+            <input id="input" placeholder="输入消息..." />
+            <button onclick="sendMessage()">发送</button>
+        </div>
+
+    </div>
+
+</div>
+
+<script>
+function sendMessage() {
+    const input = document.getElementById("input");
+    const message = input.value.trim();
+
+    if (!message) {
+        alert("请输入内容");
+        return;
+    }
+
+    const chat = document.getElementById("chat");
+
+    // 显示用户消息
+    chat.innerHTML += `<div class="user">我：${message}</div>`;
+
+    // 自动滚动到底部
+    chat.scrollTop = chat.scrollHeight;
+
+    // 发送请求
+    fetch("/chat", {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json"
+        },
+        body: JSON.stringify({ message: message })
+    })
+    .then(res => res.json())
+    .then(data => {
+        chat.innerHTML += `<div class="ai">AI：${data.reply}</div>`;
+        chat.scrollTop = chat.scrollHeight;
+        input.value = "";
+    })
+    .catch(err => {
+        console.error("错误:", err);
+    });
 }
 
-#container {
-    display: flex;
-    height: 100vh;
-}
+// 回车发送
+document.getElementById("input").addEventListener("keypress", function(e) {
+    if (e.key === "Enter") {
+        sendMessage();
+    }
+});
+</script>
 
-/* 左侧 */
-#sidebar {
-    width: 200px;
-    background: #202123;
-    color: white;
-    padding: 10px;
-}
-
-.session {
-    padding: 8px;
-    cursor: pointer;
-    border-radius: 5px;
-}
-
-.session:hover {
-    background: #2a2b32;
-}
-
-.active {
-    background: #343541;
-}
-
-/* 右侧 */
-#main {
-    flex: 1;
-    display: flex;
-    flex-direction: column;
-    background: #343541;
-    color: white;
-}
-
-#chat {
-    flex: 1;
-    padding: 20px;
-    overflow-y: auto;
-}
-
-.user {
-    text-align: right;
-    margin: 10px;
-}
-
-.ai {
-    text-align: left;
-    margin: 10px;
-}
-
-#input-area {
-    display: flex;
-    padding: 10px;
-    background: #40414f;
-}
-
-#input {
-    flex: 1;
-    padding: 10px;
-    background: #303139;
-    color: white;
-    border: none;
-}
-
-button {
-    margin-left: 10px;
-}
+</body>
+</html>
