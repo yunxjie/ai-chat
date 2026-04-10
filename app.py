@@ -22,7 +22,15 @@ def call_qwen(user_input):
     }
 
     response = requests.post(url, headers=headers, json=data)
-    return response.json()["output"]["text"]
+
+    result = response.json()
+    print(result)  # 👈 看真实返回
+
+    # ✅ 更安全写法（防止报错）
+    try:
+        return result["output"]["choices"][0]["message"]["content"]
+    except:
+        return str(result)
 
 
 @app.route("/")
@@ -32,9 +40,13 @@ def home():
 
 @app.route("/chat", methods=["POST"])
 def chat():
-    user_input = request.json["message"]
-    reply = call_qwen(user_input)
-    return jsonify({"reply": reply})
+    try:
+        user_input = request.json["message"]
+        reply = call_qwen(user_input)
+        return jsonify({"reply": reply})
+    except Exception as e:
+        print("错误：", e)
+        return jsonify({"reply": "服务器出错了"}), 500
 
 
 if __name__ == "__main__":
