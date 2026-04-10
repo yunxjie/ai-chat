@@ -15,10 +15,15 @@
 
 <script>
 function sendMessage() {
+    console.log("按钮点击了");  // 👈 关键调试
+
     const input = document.getElementById("input");
     const message = input.value;
 
-    if (!message) return;
+    if (!message) {
+        alert("请输入内容");
+        return;
+    }
 
     fetch("/chat", {
         method: "POST",
