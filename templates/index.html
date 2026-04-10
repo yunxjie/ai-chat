@@ -36,54 +36,55 @@
 
 <!-- ✅ JS必须放在body最后 -->
 <script>
-console.log("JS加载成功");  // 用于验证
+console.log("JS加载成功");
 
-function sendMessage() {
-    console.log("按钮点击了");
+document.addEventListener("DOMContentLoaded", function () {
 
-    const input = document.getElementById("input");
-    const message = input.value.trim();
+    function sendMessage() {
+        console.log("按钮点击了");
 
-    if (!message) {
-        alert("请输入内容");
-        return;
+        const input = document.getElementById("input");
+        const message = input.value.trim();
+
+        if (!message) {
+            alert("请输入内容");
+            return;
+        }
+
+        const chat = document.getElementById("chat");
+
+        chat.innerHTML += `<div class="user">我：${message}</div>`;
+
+        fetch("/chat", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({ message: message })
+        })
+        .then(res => res.json())
+        .then(data => {
+            chat.innerHTML += `<div class="ai">AI：${data.reply}</div>`;
+            chat.scrollTop = chat.scrollHeight;
+        })
+        .catch(err => {
+            console.error("错误:", err);
+        });
+
+        input.value = "";
     }
 
-    const chat = document.getElementById("chat");
+    // ✅ 在DOM加载后再绑定
+    document.getElementById("sendBtn").addEventListener("click", sendMessage);
 
-    // 显示用户消息
-    chat.innerHTML += `<div class="user">我：${message}</div>`;
-
-    // 发送请求
-    fetch("/chat", {
-        method: "POST",
-        headers: {
-            "Content-Type": "application/json"
-        },
-        body: JSON.stringify({ message: message })
-    })
-    .then(res => res.json())
-    .then(data => {
-        chat.innerHTML += `<div class="ai">AI：${data.reply}</div>`;
-        chat.scrollTop = chat.scrollHeight;
-    })
-    .catch(err => {
-        console.error("错误:", err);
+    // ✅ 回车发送
+    document.getElementById("input").addEventListener("keypress", function(e) {
+        if (e.key === "Enter") {
+            sendMessage();
+        }
     });
 
-    input.value = "";
-}
-
-// ✅ 正确绑定按钮（不用 onclick，最稳）
-document.getElementById("sendBtn").addEventListener("click", sendMessage);
-
-// ✅ 回车发送
-document.getElementById("input").addEventListener("keypress", function(e) {
-    if (e.key === "Enter") {
-        sendMessage();
-    }
 });
 </script>
-
 </body>
 </html>
