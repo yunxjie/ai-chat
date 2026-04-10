@@ -1,29 +1,18 @@
-<!DOCTYPE html>
-<html lang="zh">
-<head>
-    <meta charset="UTF-8">
-    <title>AI聊天</title>
-</head>
-<body>
-
-<h2>AI聊天</h2>
-
-<div id="chat"></div>
-
-<input id="input" placeholder="输入消息..." />
-<button onclick="sendMessage()">发送</button>
-
 <script>
 function sendMessage() {
-    console.log("按钮点击了");  // 👈 关键调试
+    console.log("按钮点击了");  // 👈 测试
 
     const input = document.getElementById("input");
-    const message = input.value;
+    const message = input.value.trim();
 
     if (!message) {
         alert("请输入内容");
         return;
     }
+
+    const chat = document.getElementById("chat");
+
+    chat.innerHTML += `<div class="user">我：${message}</div>`;
 
     fetch("/chat", {
         method: "POST",
@@ -34,16 +23,16 @@ function sendMessage() {
     })
     .then(res => res.json())
     .then(data => {
-        const chat = document.getElementById("chat");
-        chat.innerHTML += "<p>你：" + message + "</p>";
-        chat.innerHTML += "<p>AI：" + data.reply + "</p>";
-        input.value = "";
+        chat.innerHTML += `<div class="ai">AI：${data.reply}</div>`;
+        chat.scrollTop = chat.scrollHeight;
     })
     .catch(err => {
-        console.error("错误：", err);
+        console.error("错误:", err);
     });
-}
-</script>
 
-</body>
-</html>
+    input.value = "";
+}
+
+// 👇 关键：确保函数在全局
+window.sendMessage = sendMessage;
+</script>
